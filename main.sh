@@ -1,7 +1,7 @@
 #!/bin/bash
 
 get_ram() {
-    # Get RAM size                                              B     K      M      G
+    # Get RAM size                                                    B     K      M      G
     echo "RAM: $(lsmem -nb -o SIZE -J | jq '[ .memory[].size ] '| jq 'add / 1024 / 1024 / 1024')"
 }
 
