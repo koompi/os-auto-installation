@@ -1,42 +1,42 @@
 #!/bin/bash
 
+get_ram() {
+    # Get RAM size                                              B     K      M      G
+    echo "RAM: $(lsmem -nb -o SIZE -J | jq '[ .memory[].size ] '| jq 'add / 1024 / 1024 / 1024')"
+}
+
 get_disk(){
 
     # Get all install disk
     InternalDiskOnly=$(lsblk -J -o NAME,RM,SIZE | jq '
     .blockdevices[] | 
         if .rm == false then 
-            { name, children: [ .children[] | {name: .name, size: .size} ] } 
+            if .children | length > 0 then
+                { name, children: [ .children[] | {name: .name, size: .size} ] } 
+            else
+                empty
+            end
         else 
             empty 
         end
     ');
-    partitionName=$(echo $InternalDiskOnly | jq '.name' -r)
-    partitionCount=$(echo $InternalDiskOnly | jq ' .children | length ')
-    # echo $partitionName
-    # echo $partitionCount
-
+    diskName=$(echo $InternalDiskOnly | jq '.name' -r);
+    partitionList=($(echo $InternalDiskOnly | jq '.children[].name' -r));
+    partitionCount=$(echo $InternalDiskOnly | jq '.children | length ');
+     
+    # Iterate over disks
+    echo "DISK: ${diskName}"
     for((i=0;i<$partitionCount;i++)) {
-        echo "/dev/${partitionName}${i}"
+        echo "/dev/${partitionList}"
     }
-    # PartitionList=($(echo $InternalDiskOnly | jq '.children[] | length' -r))
-    # echo $InternalDiskOnly | jq '. | length' -r
-    # for((i=0;i<${#PartitionList[@]};i++)){
-    #     echo "/dev/${PartitionList[$i]}"
-    # }
+
 }
 
-get_ram() {
-    # Get RAM size                                              B     K      M      G
-    echo $(lsmem -nb -o SIZE -J | jq '[ .memory[].size ] '| jq 'add / 1024 / 1024 / 1024')
-}
 
 prepare() {
-    echo "Preparing Installation"
     get_disk
     get_ram
 }
-
 
 
 main() {
