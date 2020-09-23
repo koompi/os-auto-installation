@@ -22,12 +22,12 @@ get_disk(){
     ');
     diskName=$(echo $InternalDiskOnly | jq '.name' -r);
     partitionList=($(echo $InternalDiskOnly | jq '.children[].name' -r));
-    partitionCount=$(echo $InternalDiskOnly | jq '.children | length ');
+    partitionCount=$(echo $InternalDiskOnly | jq '.children | length');
      
     # Iterate over disks
     echo "DISK: ${diskName}"
     for((i=0;i<$partitionCount;i++)) {
-        echo "/dev/${partitionList}"
+        echo "/dev/${partitionList[$i]}"
     }
 
 }
