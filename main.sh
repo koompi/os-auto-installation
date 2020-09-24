@@ -53,17 +53,17 @@ get_disk(){
     partitionCount=$(echo $InternalDiskOnly | jq '.children | length');
 
     echo -e "Formatting file system for each partition."
-    for((i=1;i<=${#partitionList[@]};i++)){
-        [[ $i -eq 1 ]] &&
+    for((i=0;i<${#partitionList[@]};i++)){
+        [[ $i -eq 0 ]] &&
             echo "/dev/${partitionList[$i]}" &&
             mkfs.fat -F32 "/dev/${partitionList[$i]}";
+        [[ $i -eq 1 ]] &&
+            echo "/dev/${partitionList[$i]}" &&
+            mkfs.ext4 "/dev/${partitionList[$i]}";
         [[ $i -eq 2 ]] &&
             echo "/dev/${partitionList[$i]}" &&
             mkfs.ext4 "/dev/${partitionList[$i]}";
         [[ $i -eq 3 ]] &&
-            echo "/dev/${partitionList[$i]}" &&
-            mkfs.ext4 "/dev/${partitionList[$i]}";
-        [[ $i -eq 4 ]] &&
             echo "/dev/${partitionList[$i]}" &&
             mkswap "/dev/${partitionList[$i]}" &&
             swapon "/dev/${partitionList[$i]}";
