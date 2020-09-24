@@ -52,9 +52,22 @@ get_disk(){
     partitionList=($(echo $InternalDiskOnly | jq '.children[].name' -r));
     partitionCount=$(echo $InternalDiskOnly | jq '.children | length');
 
-    echo -e "New Partitions information:"
-    parted -l;
-
+    echo -e "Formatting file system for each partition."
+    for((i=1;i<=${#partitionList[@]};i++)){
+        [[ $i -eq 1 ]] &&
+            echo "/dev/${partitionList[$i]}" &&
+            mkfs.fat -F32 "/dev/${partitionList[$i]}";
+        [[ $i -eq 2 ]] &&
+            echo "/dev/${partitionList[$i]}" &&
+            mkfs.ext4 "/dev/${partitionList[$i]}";
+        [[ $i -eq 3 ]] &&
+            echo "/dev/${partitionList[$i]}" &&
+            mkfs.ext4 "/dev/${partitionList[$i]}";
+        [[ $i -eq 4 ]] &&
+            echo "/dev/${partitionList[$i]}" &&
+            mkswap "/dev/${partitionList[$i]}" &&
+            swapon "/dev/${partitionList[$i]}";
+    }
 }
 
 
