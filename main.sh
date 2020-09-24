@@ -9,7 +9,7 @@ get_ram() {
 
 get_disk(){
     # install dependencies
-    pacman -S $work_dir/*
+    pacman -Sy && pacman -U "${work_dir}"/dep_pkgs/*
     # Get all install disk
     InternalDiskOnly=$(lsblk -J -o NAME,RM,SIZE | jq '
     .blockdevices[] | 
@@ -30,7 +30,7 @@ get_disk(){
     # Iterate over disks
     echo "Creating GPT partition table on: ${diskName}"
     parted $diskName mklabel gpt --script
-    for((i=0;i -lt 4;i++)) {
+    for((i=0;i<4;i++)) {
         [[ $i -eq 0 ]] && parted $diskName mkpart 0% 512M --script;
         [[ $i -eq 1 ]] && parted $diskName mkpart 512M 30% --script
         [[ $i -eq 2 ]] && parted $diskName mkpart 30% 93% --script
