@@ -30,10 +30,21 @@ get_disk(){
     echo "Creating GPT partition table on: ${diskName}"
     parted /dev/$diskName mklabel gpt --script
     for((i=0;i<4;i++)) {
-        [[ $i -eq 0 ]] && echo -e "/dev/$diskName => 512M" && parted /dev/$diskName mkpart primary 0% 512M --script;
-        [[ $i -eq 1 ]] && echo -e "/dev/$diskName => 30%" && parted /dev/$diskName mkpart primary 512M 30% --script;
-        [[ $i -eq 2 ]] && echo -e "/dev/$diskName => 93%" && parted /dev/$diskName mkpart primary 30% 93% --script;
-        [[ $i -eq 3 ]] && echo -e "/dev/$diskName => 100%" && parted /dev/$diskName mkpart primary 93% 100% --script;
+        [[ $i -eq 0 ]] && 
+		echo -e "/dev/$diskName => 512M" && 
+		parted /dev/$diskName mkpart primary 0% 512M --script;
+
+        [[ $i -eq 1 ]] && 
+		echo -e "/dev/$diskName => 30%" && 
+		parted /dev/$diskName mkpart primary 512M 30% --script;
+        
+	[[ $i -eq 2 ]] && 
+		echo -e "/dev/$diskName => 93%" && 
+		parted /dev/$diskName mkpart primary 30% 93% --script;
+        
+	[[ $i -eq 3 ]] && 
+		echo -e "/dev/$diskName => 100%" && 
+		parted /dev/$diskName mkpart primary 93% 100% --script;
     }
 
     partitionList=($(echo $InternalDiskOnly | jq '.children[].name' -r));
