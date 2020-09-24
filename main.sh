@@ -31,22 +31,22 @@ get_disk(){
     parted /dev/$diskName mklabel gpt --script
     for((i=1;i<5;i++)) {
 
-        [[ $i -eq 1 ]] && 
-            echo -e "/dev/$diskName => 512M" && 
-            parted /dev/$diskName mkpart "EFI system partition" fat32 0% 512M --script &&
+        [[ $i -eq 1 ]] &&
+            echo -e "/dev/$diskName => 512M" &&
+            parted /dev/$diskName mkpart "EFI" fat32 0% 512M --script &&
             set 1 esp on;
 
-        [[ $i -eq 2 ]] && 
-		    echo -e "/dev/$diskName => 30%" && 
-		    parted /dev/$diskName mkpart "ROOT partition" ext4 512M 30% --script;
+        [[ $i -eq 2 ]] &&
+		echo -e "/dev/$diskName => 30%" &&
+		parted /dev/$diskName mkpart "ROOT" ext4 512M 30% --script;
         
         [[ $i -eq 3 ]] && 
-            echo -e "/dev/$diskName => 93%" && 
-            parted /dev/$diskName mkpart "Home partition" ext4 30% 93% --script;
+            echo -e "/dev/$diskName => 93%" &&
+            parted /dev/$diskName mkpart "HOME" ext4 30% 93% --script;
             
         [[ $i -eq 4 ]] && 
-            echo -e "/dev/$diskName => 100%" && 
-            parted /dev/$diskName mkpart "SWAP partition" linux-swap 93% 100% --script;
+            echo -e "/dev/$diskName => 100%" &&
+            parted /dev/$diskName mkpart "SWAP" linux-swap 93% 100% --script;
     }
 
     partitionList=($(echo $InternalDiskOnly | jq '.children[].name' -r));
