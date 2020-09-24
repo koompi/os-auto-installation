@@ -29,12 +29,12 @@ get_disk(){
      
     # Iterate over disks
     echo "Creating GPT partition table on: ${diskName}"
-    parted $diskName mklabel gpt --script
+    parted /dev/$diskName mklabel gpt --script
     for((i=0;i<4;i++)) {
-        [[ $i -eq 0 ]] && parted $diskName mkpart 0% 512M --script;
-        [[ $i -eq 1 ]] && parted $diskName mkpart 512M 30% --script
-        [[ $i -eq 2 ]] && parted $diskName mkpart 30% 93% --script
-        [[ $i -eq 3 ]] && parted $diskName mkpart 93% 100% --script
+        [[ $i -eq 0 ]] && parted /dev/$diskName mkpart primary 0% 512M --script;
+        [[ $i -eq 1 ]] && parted /dev/$diskName mkpart primary 512M 30% --script
+        [[ $i -eq 2 ]] && parted /dev/$diskName mkpart primary 30% 93% --script
+        [[ $i -eq 3 ]] && parted /dev/$diskName mkpart primary 93% 100% --script
     }
 
 }
