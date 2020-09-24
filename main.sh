@@ -8,6 +8,8 @@ get_ram() {
 }
 
 get_disk(){
+    # Variables
+    local boot_part root_part home_part swap_part
     # install dependencies
     pacman -Sy && yes | pacman -U "${work_dir}"/dep_pkgs/*;
     # Get all install disk
@@ -52,22 +54,29 @@ get_disk(){
     partitionList=($(echo $InternalDiskOnly | jq '.children[].name' -r));
     partitionCount=$(echo $InternalDiskOnly | jq '.children | length');
 
-    echo -e "Formatting file system for each partition."
+    echo -e "Formatting file system for each partition..."
     for((i=0;i<${#partitionList[@]};i++)){
         [[ $i -eq 0 ]] &&
             echo "/dev/${partitionList[$i]}" &&
             mkfs.fat -F32 "/dev/${partitionList[$i]}";
+            boot_part="/dev/${partitionList[$i]}"
         [[ $i -eq 1 ]] &&
             echo "/dev/${partitionList[$i]}" &&
             mkfs.ext4 -F "/dev/${partitionList[$i]}";
+            root_part="/dev/${partitionList[$i]}";
         [[ $i -eq 2 ]] &&
             echo "/dev/${partitionList[$i]}" &&
             mkfs.ext4 -F "/dev/${partitionList[$i]}";
+            home_part="/dev/${partitionList[$i]}"
         [[ $i -eq 3 ]] &&
             echo "/dev/${partitionList[$i]}" &&
             mkswap "/dev/${partitionList[$i]}" &&
             swapon "/dev/${partitionList[$i]}";
+            swap_part="/dev/${partitionList[$i]}"
     }
+
+    echo -e "Mounting file system..."
+    echo $boot_part $root_part $home_part $swap_part
 }
 
 
