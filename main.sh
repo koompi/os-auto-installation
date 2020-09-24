@@ -9,7 +9,7 @@ get_ram() {
 
 get_disk(){
     # install dependencies
-    pacman -Sy && pacman -U "${work_dir}"/dep_pkgs/*
+    pacman -Sy && yes | pacman -U "${work_dir}"/dep_pkgs/*;
     # Get all install disk
     InternalDiskOnly=$(lsblk -J -o NAME,RM,SIZE | jq '
     .blockdevices[] | 
@@ -59,10 +59,10 @@ get_disk(){
             mkfs.fat -F32 "/dev/${partitionList[$i]}";
         [[ $i -eq 1 ]] &&
             echo "/dev/${partitionList[$i]}" &&
-            mkfs.ext4 "/dev/${partitionList[$i]}";
+            mkfs.ext4 -F "/dev/${partitionList[$i]}";
         [[ $i -eq 2 ]] &&
             echo "/dev/${partitionList[$i]}" &&
-            mkfs.ext4 "/dev/${partitionList[$i]}";
+            mkfs.ext4 -F "/dev/${partitionList[$i]}";
         [[ $i -eq 3 ]] &&
             echo "/dev/${partitionList[$i]}" &&
             mkswap "/dev/${partitionList[$i]}" &&
