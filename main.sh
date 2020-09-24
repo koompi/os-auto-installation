@@ -1,12 +1,15 @@
 #!/bin/bash
 
+work_dir=$(pwd)
+
 get_ram() {
     # Get RAM size                                                    B     K      M      G
     echo "RAM: $(lsmem -nb -o SIZE -J | jq '[ .memory[].size ] '| jq 'add / 1024 / 1024 / 1024')"
 }
 
 get_disk(){
-
+    # install dependencies
+    pacman -S $work_dir/*
     # Get all install disk
     InternalDiskOnly=$(lsblk -J -o NAME,RM,SIZE | jq '
     .blockdevices[] | 
@@ -25,9 +28,13 @@ get_disk(){
     partitionCount=$(echo $InternalDiskOnly | jq '.children | length');
      
     # Iterate over disks
-    echo "DISK: ${diskName}"
-    for((i=0;i<$partitionCount;i++)) {
-        echo "/dev/${partitionList[$i]}"
+    echo "Creating GPT partition table on: ${diskName}"
+    parted $diskName mklabel gpt --script
+    for((i=0;i -lt 4;i++)) {
+        [[ $i -eq 0 ]] && parted $diskName mkpart 0% 512M --script;
+        [[ $i -eq 1 ]] && parted $diskName mkpart 512M 30% --script
+        [[ $i -eq 2 ]] && parted $diskName mkpart 30% 93% --script
+        [[ $i -eq 3 ]] && parted $diskName mkpart 93% 100% --script
     }
 
 }
