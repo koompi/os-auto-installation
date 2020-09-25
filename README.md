@@ -14,3 +14,4 @@ This tool is designed to work with any Linux ISO implementing Arch Linux style. 
 cp auto_setup.sh /usr/bin/
 cp oem_setup.sh /root/
 ```
+
